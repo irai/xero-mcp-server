@@ -30,15 +30,14 @@ const ListContactsTool = CreateXeroTool(
     }
 
     const contacts = response.result;
-    const contactCount = contacts?.length ?? 0;
 
     return {
       content: [
         {
           type: "text" as const,
-          text: `Found ${contactCount} contacts${page ? ` (page ${page})` : ''}:`,
+          text: `Found ${contacts?.length || 0} contacts${page ? ` (page ${page})` : ''}:`,
         },
-        ...(contactCount > 0 ? contacts!.map((contact) => ({
+        ...(contacts?.map((contact) => ({
           type: "text" as const,
           text: [
             `Contact: ${contact.name}`,
@@ -77,7 +76,7 @@ const ListContactsTool = CreateXeroTool(
           ]
             .filter(Boolean)
             .join("\n"),
-        })) : []),
+        })) || []),
       ],
     };
   },
