@@ -4,6 +4,14 @@ import { DeepLinkType, getDeepLink } from "../../helpers/get-deeplink.js";
 import { ensureError } from "../../helpers/ensure-error.js";
 import { CreateXeroTool } from "../../helpers/create-xero-tool.js";
 
+const contactSchema = z.object({
+  name: z.string().describe("Full name of contact/organisation to create."),
+  email: z.coerce.string().email().optional().describe("Optional email address."),
+  phone: z.coerce.string().optional().describe("Optional phone number."),
+});
+
+type ContactInput = z.infer<typeof contactSchema>;
+
 const CreateContactTool = CreateXeroTool(
   "create-contact",
   "Create a contact in Xero.\
@@ -11,13 +19,21 @@ const CreateContactTool = CreateXeroTool(
   This deep link can be used to view the contact in Xero directly. \
   This link should be displayed to the user.",
   {
-    name: z.string().describe("Full name of contact/organisation to create."),
-    email: z.coerce.string().email().optional().describe("Optional email address."),
-    phone: z.coerce.string().optional().describe("Optional phone number."),
+    properties: contactSchema.optional(),
   },
-  async ({ name, email, phone }) => {
+  async (params: { properties?: ContactInput } | ContactInput) => {
     try {
-      const response = await createXeroContact(name, email, phone);
+      // Extract the actual contact data, handling both formats
+      const contactData = 'properties' in params ? params.properties : params as ContactInput;
+      if (!contactData) {
+        throw new Error("No contact data provided");
+      }
+
+      const response = await createXeroContact(
+        contactData.name,
+        contactData.email,
+        contactData.phone
+      );
       if (response.isError) {
         return {
           content: [
