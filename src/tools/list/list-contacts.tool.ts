@@ -17,7 +17,7 @@ const ListContactsTool = CreateXeroTool(
       information for contacts. "),
     searchTerm: z.coerce.string().optional().describe("Optional search term to filter contacts by name, first name, last name, \
       email, or other contact details."),
-    ifModifiedSince: z.coerce.string().optional().describe("Optional date string (ISO format) to filter \
+    ifModifiedSince: z.coerce.string().nullable().optional().transform(val => val === null ? undefined : val).describe("Optional date string (ISO format) to filter \
       contacts modified since this date. Example: '2024-01-01T00:00:00Z'"),
   },
   async (params) => {
