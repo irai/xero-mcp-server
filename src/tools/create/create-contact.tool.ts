@@ -12,8 +12,8 @@ const CreateContactTool = CreateXeroTool(
   This link should be displayed to the user.",
   {
     name: z.string(),
-    email: z.string().email().optional(),
-    phone: z.string().optional(),
+    email: z.coerce.string().email().optional(),
+    phone: z.coerce.string().optional(),
   },
   async ({ name, email, phone }) => {
     try {
