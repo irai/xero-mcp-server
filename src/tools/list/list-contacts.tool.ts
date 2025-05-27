@@ -6,18 +6,18 @@ const ListContactsTool = CreateXeroTool(
   "list-contacts",
   "List all contacts in Xero. This includes Suppliers and Customers.",
   {
-    page: z.number().optional().describe("Optional page number to retrieve for pagination. \
+    page: z.coerce.number().optional().describe("Optional page number to retrieve for pagination. \
       If not provided, the first page will be returned. If 100 contacts are returned, \
       call this tool again with the next page number."),
-    where: z.string().optional().describe("Optional filter expression to filter contacts. \
+    where: z.coerce.string().optional().describe("Optional filter expression to filter contacts. \
       Example: 'where=peter', 'where=Name=\"ABC limited\"', 'where=EmailAddress=\"email@example.com\"', where=AccountNumber=\"ABC-100\"'"),
     ids: z.array(z.string()).optional().describe("Optional array of contact IDs to filter by. \
       If provided, only contacts with these IDs will be returned."),
-    summaryOnly: z.boolean().optional().default(true).describe("If true, returns only summary \
+    summaryOnly: z.coerce.boolean().optional().default(true).describe("If true, returns only summary \
       information for contacts. "),
-    searchTerm: z.string().optional().describe("Optional search term to filter contacts by name, first name, last name, \
+    searchTerm: z.coerce.string().optional().describe("Optional search term to filter contacts by name, first name, last name, \
       email, or other contact details."),
-    ifModifiedSince: z.string().optional().describe("Optional date string (ISO format) to filter \
+    ifModifiedSince: z.coerce.string().optional().describe("Optional date string (ISO format) to filter \
       contacts modified since this date. Example: '2024-01-01T00:00:00Z'"),
   },
   async (params) => {
