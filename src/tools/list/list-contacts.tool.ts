@@ -33,10 +33,10 @@ const ListContactsTool = CreateXeroTool(
 
     return {
       content: [
-        {
-          type: "text" as const,
-          text: `Found ${contacts?.length || 0} contacts${page ? ` (page ${page})` : ''}:`,
-        },
+        // {
+        //   type: "text" as const,
+        //   text: `Found ${contacts?.length || 0} contacts${page ? ` (page ${page})` : ''}:`,
+        // },
         ...(contacts?.map((contact) => ({
           type: "text" as const,
           text: [
