@@ -13,12 +13,10 @@ const ListContactsTool = CreateXeroTool(
       Example: 'where=peter', 'where=Name=\"ABC limited\"', 'where=EmailAddress=\"email@example.com\"', where=AccountNumber=\"ABC-100\"'"),
     ids: z.array(z.coerce.string()).nullable().optional().transform(val => val === null ? undefined : val).describe("Optional array of contact IDs to filter by. \
       If provided, only contacts with these IDs will be returned."),
-    searchTerm: z.coerce.string().optional().describe("Optional search term to filter contacts by name, first name, last name, \
-      email, or other contact details."),
   },
   async (params) => {
-    const { page, where, ids, searchTerm } = params;
-    const response = await listXeroContacts(page, where, ids, searchTerm);
+    const { page, where, ids } = params;
+    const response = await listXeroContacts(page, where, ids, undefined);
 
     if (response.isError) {
       return {
