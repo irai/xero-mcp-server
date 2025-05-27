@@ -17,13 +17,10 @@ const ListContactsTool = CreateXeroTool(
       information for contacts. "),
     searchTerm: z.coerce.string().optional().describe("Optional search term to filter contacts by name, first name, last name, \
       email, or other contact details."),
-    ifModifiedSince: z.coerce.string().nullable().optional().transform(val => val === null ? undefined : val).describe("Optional date string (ISO format) to filter \
-      contacts modified since this date. Example: '2024-01-01T00:00:00Z'"),
   },
   async (params) => {
-    const { page, where, ids, summaryOnly, searchTerm, ifModifiedSince } = params;
-    const modifiedSince = ifModifiedSince ? new Date(ifModifiedSince) : undefined;
-    const response = await listXeroContacts(page, where, ids, summaryOnly, searchTerm, modifiedSince);
+    const { page, where, ids, summaryOnly, searchTerm } = params;
+    const response = await listXeroContacts(page, where, ids, summaryOnly, searchTerm);
 
     if (response.isError) {
       return {

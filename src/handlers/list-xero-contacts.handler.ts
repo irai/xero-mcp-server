@@ -10,13 +10,12 @@ async function getContacts(
   ids?: string[],
   summaryOnly: boolean = true,
   searchTerm?: string,
-  ifModifiedSince?: Date
 ): Promise<Contact[]> {
   await xeroClient.authenticate();
 
   const contacts = await xeroClient.accountingApi.getContacts(
     xeroClient.tenantId,
-    ifModifiedSince, // ifModifiedSince
+    undefined, // ifModifiedSince
     where, // where
     undefined, // order
     ids, // iDs
@@ -39,10 +38,9 @@ export async function listXeroContacts(
   ids?: string[],
   summaryOnly: boolean = true,
   searchTerm?: string,
-  ifModifiedSince?: Date
 ): Promise<XeroClientResponse<Contact[]>> {
   try {
-    const contacts = await getContacts(page, where, ids, summaryOnly, searchTerm, ifModifiedSince);
+    const contacts = await getContacts(page, where, ids, summaryOnly, searchTerm);
 
     return {
       result: contacts,
