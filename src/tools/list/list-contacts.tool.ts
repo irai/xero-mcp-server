@@ -11,7 +11,7 @@ const ListContactsTool = CreateXeroTool(
       call this tool again with the next page number."),
     where: z.coerce.string().optional().describe("Optional filter expression to filter contacts. \
       Example: 'where=peter', 'where=Name=\"ABC limited\"', 'where=EmailAddress=\"email@example.com\"', where=AccountNumber=\"ABC-100\"'"),
-    ids: z.array(z.coerce.string()).optional().describe("Optional array of contact IDs to filter by. \
+    ids: z.array(z.coerce.string()).nullable().optional().transform(val => val === null ? undefined : val).describe("Optional array of contact IDs to filter by. \
       If provided, only contacts with these IDs will be returned."),
     summaryOnly: z.coerce.boolean().optional().default(true).describe("If true, returns only summary \
       information for contacts. "),
