@@ -34,6 +34,9 @@ const ListContactsTool = CreateXeroTool(
 
     const contacts = response.result;
 
+    console.log("MCP contacts", contacts);
+
+
     if (!contacts?.length) {
       return {
         content: [

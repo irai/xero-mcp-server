@@ -11,9 +11,9 @@ const CreateContactTool = CreateXeroTool(
   This deep link can be used to view the contact in Xero directly. \
   This link should be displayed to the user.",
   {
-    name: z.string(),
-    email: z.coerce.string().email().optional(),
-    phone: z.coerce.string().optional(),
+    name: z.string().describe("Full name of contact/organisation to create."),
+    email: z.coerce.string().email().optional().describe("Optional email address."),
+    phone: z.coerce.string().optional().describe("Optional phone number."),
   },
   async ({ name, email, phone }) => {
     try {
