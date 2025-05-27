@@ -4,20 +4,27 @@ import { XeroClientResponse } from "../types/tool-response.js";
 import { formatError } from "../helpers/format-error.js";
 import { getClientHeaders } from "../helpers/get-client-headers.js";
 
-async function getContacts(page?: number): Promise<Contact[]> {
+async function getContacts(
+  page?: number,
+  where?: string,
+  ids?: string[],
+  summaryOnly: boolean = true,
+  searchTerm?: string,
+  ifModifiedSince?: Date
+): Promise<Contact[]> {
   await xeroClient.authenticate();
 
   const contacts = await xeroClient.accountingApi.getContacts(
     xeroClient.tenantId,
-    undefined, // ifModifiedSince
-    undefined, // where
+    ifModifiedSince, // ifModifiedSince
+    where, // where
     undefined, // order
-    undefined, // iDs
-    page, // page
+    ids, // iDs
+    page ? Number(page) : undefined, // page - ensure it's a number
     undefined, // includeArchived
-    true, // summaryOnly
+    summaryOnly, // summaryOnly
+    searchTerm, // searchTerm
     undefined, // pageSize
-    undefined, // searchTerm
     getClientHeaders(),
   );
   return contacts.body.contacts ?? [];
@@ -26,11 +33,16 @@ async function getContacts(page?: number): Promise<Contact[]> {
 /**
  * List all contacts from Xero
  */
-export async function listXeroContacts(page?: number): Promise<
-  XeroClientResponse<Contact[]>
-> {
+export async function listXeroContacts(
+  page?: number,
+  where?: string,
+  ids?: string[],
+  summaryOnly: boolean = true,
+  searchTerm?: string,
+  ifModifiedSince?: Date
+): Promise<XeroClientResponse<Contact[]>> {
   try {
-    const contacts = await getContacts(page);
+    const contacts = await getContacts(page, where, ids, summaryOnly, searchTerm, ifModifiedSince);
 
     return {
       result: contacts,
