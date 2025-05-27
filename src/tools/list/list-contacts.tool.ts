@@ -13,10 +13,12 @@ const ListContactsTool = CreateXeroTool(
       Example: 'where=peter', 'where=Name=\"ABC limited\"', 'where=EmailAddress=\"email@example.com\"', where=AccountNumber=\"ABC-100\"'"),
     ids: z.array(z.coerce.string()).nullable().optional().transform(val => val === null ? undefined : val).describe("Optional array of contact IDs to filter by. \
       If provided, only contacts with these IDs will be returned."),
+    searchTerm: z.coerce.string().optional().describe("Optional search term to filter contacts by name, first name, last name, \
+      email, or other contact details."),
   },
   async (params) => {
-    const { page, where, ids } = params;
-    const response = await listXeroContacts(page, where, ids, undefined);
+    const { page, where, ids, searchTerm } = params;
+    const response = await listXeroContacts(page, where, ids, searchTerm);
 
     if (response.isError) {
       return {
@@ -31,53 +33,58 @@ const ListContactsTool = CreateXeroTool(
 
     const contacts = response.result;
 
+    if (!contacts?.length) {
+      return {
+        content: [
+          {
+            type: "text" as const,
+            text: "no contacts found",
+          },
+        ],
+      };
+    }
+
     return {
-      content: [
-        // {
-        //   type: "text" as const,
-        //   text: `Found ${contacts?.length || 0} contacts${page ? ` (page ${page})` : ''}:`,
-        // },
-        ...(contacts?.map((contact) => ({
-          type: "text" as const,
-          text: [
-            `Contact: ${contact.name}`,
-            `ID: ${contact.contactID}`,
-            contact.firstName ? `First Name: ${contact.firstName}` : null,
-            contact.lastName ? `Last Name: ${contact.lastName}` : null,
-            contact.emailAddress
-              ? `Email: ${contact.emailAddress}`
-              : "No email",
-            contact.accountsReceivableTaxType
-              ? `AR Tax Type: ${contact.accountsReceivableTaxType}`
-              : null,
-            contact.accountsPayableTaxType
-              ? `AP Tax Type: ${contact.accountsPayableTaxType}`
-              : null,
-            `Type: ${
-              [
-                contact.isCustomer ? "Customer" : null,
-                contact.isSupplier ? "Supplier" : null,
-              ]
-                .filter(Boolean)
-                .join(", ") || "Unknown"
-            }`,
-            contact.defaultCurrency
-              ? `Default Currency: ${contact.defaultCurrency}`
-              : null,
-            contact.updatedDateUTC
-              ? `Last Updated: ${contact.updatedDateUTC}`
-              : null,
-            `Status: ${contact.contactStatus || "Unknown"}`,
-            contact.contactGroups?.length
-              ? `Groups: ${contact.contactGroups.map((g) => g.name).join(", ")}`
-              : null,
-            contact.hasAttachments ? "Has Attachments: Yes" : null,
-            contact.hasValidationErrors ? "Has Validation Errors: Yes" : null,
-          ]
-            .filter(Boolean)
-            .join("\n"),
-        })) || []),
-      ],
+      content: contacts.map((contact) => ({
+        type: "text" as const,
+        text: [
+          `Contact: ${contact.name}`,
+          `ID: ${contact.contactID}`,
+          contact.firstName ? `First Name: ${contact.firstName}` : null,
+          contact.lastName ? `Last Name: ${contact.lastName}` : null,
+          contact.emailAddress
+            ? `Email: ${contact.emailAddress}`
+            : "No email",
+          contact.accountsReceivableTaxType
+            ? `AR Tax Type: ${contact.accountsReceivableTaxType}`
+            : null,
+          contact.accountsPayableTaxType
+            ? `AP Tax Type: ${contact.accountsPayableTaxType}`
+            : null,
+          `Type: ${
+            [
+              contact.isCustomer ? "Customer" : null,
+              contact.isSupplier ? "Supplier" : null,
+            ]
+              .filter(Boolean)
+              .join(", ") || "Unknown"
+          }`,
+          contact.defaultCurrency
+            ? `Default Currency: ${contact.defaultCurrency}`
+            : null,
+          contact.updatedDateUTC
+            ? `Last Updated: ${contact.updatedDateUTC}`
+            : null,
+          `Status: ${contact.contactStatus || "Unknown"}`,
+          contact.contactGroups?.length
+            ? `Groups: ${contact.contactGroups.map((g) => g.name).join(", ")}`
+            : null,
+          contact.hasAttachments ? "Has Attachments: Yes" : null,
+          contact.hasValidationErrors ? "Has Validation Errors: Yes" : null,
+        ]
+          .filter(Boolean)
+          .join("\n"),
+      })),
     };
   },
 );
