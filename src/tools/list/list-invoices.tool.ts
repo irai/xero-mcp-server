@@ -18,14 +18,19 @@ const ListInvoicesTool = CreateXeroTool(
     invoiceNumbers: z
       .array(z.string())
       .optional()
+      .nullable()
       .describe("If provided, invoice line items will also be returned"),
   },
   async ({ page, contactIds, invoiceNumbers }: { 
     page?: number; 
-    contactIds?: string[]; 
-    invoiceNumbers?: string[] 
+    contactIds?: string[] | null; 
+    invoiceNumbers?: string[] | null 
   }) => {
-    const response = await listXeroInvoices(page, contactIds, invoiceNumbers);
+    const response = await listXeroInvoices(
+      page, 
+      contactIds ?? undefined, 
+      invoiceNumbers ?? undefined
+    );
     if (response.error !== null) {
       return {
         content: [
